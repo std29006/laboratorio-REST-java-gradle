@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id 'war'
+}
+
+apply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
+
+
+project.webAppDirName = 'src/main/webapp'
+
+
+group 'engtelecom'
+version '1.0'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet', version: '2.28'
+    compile group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.28'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-jackson', version: '2.28'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-multipart', version: '2.28'
+    compile group: 'org.glassfish.jersey.media', name: 'jersey-media-json-processing', version: '2.28'
+}
+
+gretty {
+    servletContainer = 'tomcat8'
+    contextPath = '/'
+}
