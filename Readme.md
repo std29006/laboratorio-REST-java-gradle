@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/std29006/laboratorio-REST-java-gradle.svg?branch=master)](https://travis-ci.org/std29006/laboratorio-REST-java-gradle)
+
 # Laboratório com serviços web RESTful em Java
 
 
