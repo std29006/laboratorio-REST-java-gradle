@@ -3,8 +3,7 @@ package engtelecom.std.rest;
 import engtelecom.std.entities.Pessoa;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 
 @Path("exemplo")
 public class PrimeiroExemplo {
@@ -38,9 +37,13 @@ public class PrimeiroExemplo {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response addPessoa(Pessoa p) {
-        System.out.println(p);
-        return Response.ok(p).build();
+    public Response addPessoa(Pessoa p, @Context UriInfo uriInfo) {
+
+        // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
+        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+        builder.path(p.getNome());
+
+        return Response.created(builder.build()).build();
     }
 
     @Path("pessoas")

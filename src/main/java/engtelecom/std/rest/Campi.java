@@ -7,8 +7,7 @@ import engtelecom.std.entities.Campus;
 import engtelecom.std.entities.Laboratorio;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.util.Map;
 
 
@@ -77,25 +76,35 @@ public class Campi {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response addCampus(Campus c) {
+    public Response addCampus(Campus c, @Context UriInfo uriInfo) {
         if (this.bancoDeDados.campiDAO.listaDosCampi.put(c.getSigla().toUpperCase(), c) == null) {
             throw new InternalServerErrorException();
         }
 
-        return Response.ok("sucesso").build();
+        // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
+        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+        builder.path(c.getSigla());
+
+        return Response.created(builder.build()).build();
     }
 
     @Path("/{sigla-campus}/blocos")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response addBloco(@PathParam("sigla-campus") String campus, Bloco b) {
+    public Response addBloco(@PathParam("sigla-campus") String campus, Bloco b, @Context UriInfo uriInfo) {
         Campus c = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase());
         if (c == null) {
             throw new NotFoundException();
         }
         c.getBlocos().put(b.getSigla().toUpperCase(), b);
-        return Response.ok("sucesso").build();
+
+
+        // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
+        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+        builder.path(b.getSigla());
+
+        return Response.created(builder.build()).build();
     }
 
 
@@ -103,7 +112,7 @@ public class Campi {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
-    public Response addLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, Laboratorio lab) {
+    public Response addLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, Laboratorio lab, @Context UriInfo uriInfo) {
 
         try {
             this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().put(lab.getSigla().toUpperCase(), lab);
@@ -111,17 +120,21 @@ public class Campi {
             throw new NotFoundException();
         }
 
-        return Response.ok("sucesso").build();
+        // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
+        UriBuilder builder = uriInfo.getAbsolutePathBuilder();
+        builder.path(lab.getSigla());
+
+        return Response.created(builder.build()).build();
     }
 
-    @Path("/{sigla-campus}/blocos/{bloco}/laboratorios")
+    @Path("/{sigla-campus}/blocos/{bloco}/laboratorios/{siglaLab}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
-    public Response updateLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, Laboratorio lab) {
+    public Response updateLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, @PathParam("siglaLab") String siglaLab, Laboratorio lab) {
         Laboratorio l;
         try {
-            l = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().get(lab.getSigla());
+            l = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().get(siglaLab);
 
         } catch (Exception e) {
             throw new NotFoundException();
@@ -144,6 +157,7 @@ public class Campi {
             return Response.ok("sucesso").build();
         }
         throw new NotFoundException();
+        // Disparar a exceção acima seria equivalente ao retorno abaixo.
 //        return Response.status(Response.Status.NOT_FOUND).entity("campus e/ou bloco e/ou laboratório não encontrado").build();
     }
 }
