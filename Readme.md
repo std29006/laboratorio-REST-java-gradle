@@ -46,3 +46,5 @@ curl -X DELETE http://localhost:8080/api/v1/exemplo/pessoas/fulano
 ## Serviço para gestão de laboratórios
 
 Exemplo de um serviço para gestão dos laboratórios de ensino dos campi do IFSC. É criada uma base de dados em memória para armazenar os dados dos campi.
+
+[Essa API foi documentada](laboratorios.apib) de acordo com a especificação API Blueprint

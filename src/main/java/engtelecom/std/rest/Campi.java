@@ -31,7 +31,6 @@ public class Campi {
             return Response.ok(c).build();
         }
         throw new NotFoundException();
-
     }
 
     @Path("/{sigla-campus}/blocos")
@@ -61,15 +60,12 @@ public class Campi {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getLabsDoBlocos(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, @PathParam("sigla-lab") String laboratorio) {
-
         try {
             Laboratorio lab = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().get(laboratorio.toUpperCase());
             return Response.ok(lab).build();
         } catch (Exception e) {
             throw new NotFoundException();
         }
-
-
     }
 
 
@@ -77,7 +73,11 @@ public class Campi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addCampus(Campus c, @Context UriInfo uriInfo) {
-        if (this.bancoDeDados.campiDAO.listaDosCampi.put(c.getSigla().toUpperCase(), c) == null) {
+        try {
+            if (this.bancoDeDados.campiDAO.listaDosCampi.put(c.getSigla().toUpperCase(), c) == null) {
+                throw new InternalServerErrorException();
+            }
+        }catch (Exception e){
             throw new InternalServerErrorException();
         }
 
@@ -93,12 +93,15 @@ public class Campi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addBloco(@PathParam("sigla-campus") String campus, Bloco b, @Context UriInfo uriInfo) {
-        Campus c = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase());
-        if (c == null) {
-            throw new NotFoundException();
+        try {
+            Campus c = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase());
+            if (c == null) {
+                throw new NotFoundException();
+            }
+            c.getBlocos().put(b.getSigla().toUpperCase(), b);
+        }catch (Exception e){
+            throw new InternalServerErrorException();
         }
-        c.getBlocos().put(b.getSigla().toUpperCase(), b);
-
 
         // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
         UriBuilder builder = uriInfo.getAbsolutePathBuilder();
@@ -113,11 +116,10 @@ public class Campi {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.TEXT_PLAIN)
     public Response addLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, Laboratorio lab, @Context UriInfo uriInfo) {
-
         try {
             this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().put(lab.getSigla().toUpperCase(), lab);
         } catch (Exception e) {
-            throw new NotFoundException();
+            throw new InternalServerErrorException();
         }
 
         // Retornando o código HTTP 201 com a URL do recurso criado no campo Location do cabeçalho HTTP
@@ -130,20 +132,17 @@ public class Campi {
     @Path("/{sigla-campus}/blocos/{bloco}/laboratorios/{siglaLab}")
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    @Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_PLAIN})
+    @Produces(MediaType.TEXT_PLAIN)
     public Response updateLaboratorio(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, @PathParam("siglaLab") String siglaLab, Laboratorio lab) {
         Laboratorio l;
         try {
             l = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().get(siglaLab);
-
+            if (l != null) {
+                this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().put(lab.getSigla().toUpperCase(), lab);
+            }
         } catch (Exception e) {
             throw new NotFoundException();
         }
-
-        if (l != null) {
-            this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().put(lab.getSigla().toUpperCase(), lab);
-        }
-
         return Response.ok("sucesso").build();
     }
 
@@ -151,10 +150,13 @@ public class Campi {
     @DELETE
     @Produces(MediaType.TEXT_PLAIN)
     public Response removeLab(@PathParam("sigla-campus") String campus, @PathParam("bloco") String bloco, @PathParam("sigla-lab") String laboratorio) {
-        Laboratorio l = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().remove(laboratorio.toUpperCase());
-
-        if (l != null) {
-            return Response.ok("sucesso").build();
+        try {
+            Laboratorio l = this.bancoDeDados.campiDAO.buscaCampusPelaSigla(campus.toUpperCase()).buscaBlocoPelaSigla(bloco.toUpperCase()).getLaboratorios().remove(laboratorio.toUpperCase());
+            if (l != null) {
+                return Response.ok("sucesso").build();
+            }
+        }catch (Exception e){
+            throw new InternalServerErrorException();
         }
         throw new NotFoundException();
         // Disparar a exceção acima seria equivalente ao retorno abaixo.
