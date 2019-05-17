@@ -1,0 +1,285 @@
+FORMAT: 1A
+HOST: http://localhost:8080/api/v1
+
+# Gestão de laboratórios
+
+Um simples exemplo de como documentar uma API usando a [*API Blueprint specification*](https://apiblueprint.org/documentation).
+
+Uma opção para editar arquivos `.apib` é o editor Visual Studio Code, com as extensões API Elements extersion e API Blueprint Viewer.
+
+A aplicação [Dredd](https://dredd.org/) é um *framework* para teste de APIs REST. A aplicação lê a sua API documentada (como esse arquivo) e executa passo a passo em um servidor onde tem sua API implementada. Verifica-se aqui se a sua implementação está gerando as respostas descritas na documentação de sua API.
+
+# Group Campi
+
+## Campi  [/campi]
+
+### Listar todos os campi da instituição [GET]
+
++ Response 200 (application/json)
+
+        {
+            "campi": {
+                "FLN": {
+                    "nome": "Florianópolis",
+                    "sigla": "FLN",
+                    "telefone": "3999-2854",
+                    "blocos": {
+                        "MECANICA": {
+                            "sigla": "mecanica",
+                            "descricao": "ensino",
+                            "laboratorios": {
+                                "LABMAT": {
+                                    "nome": "Laboratório de Materiais",
+                                    "sigla": "LabMat",
+                                    "totalDeLugares": 30,
+                                    "tipo": "HARDWARE"
+                                }
+                            }
+                        }
+                    }
+                },
+                "SJE": {
+                    "nome": "São José",
+                    "sigla": "SJE",
+                    "telefone": "3381-2854",
+                    "blocos": {
+                        "BLOCOB": {
+                            "sigla": "blocoB",
+                            "descricao": "ensino",
+                            "laboratorios": {
+                                "LABSIDI": {
+                                    "nome": "Laboratório de Sistemas Digitais",
+                                    "sigla": "LabSiDi",
+                                    "totalDeLugares": 24,
+                                    "tipo": "SOFTWARE"
+                                },
+                                "LABRECOM": {
+                                    "nome": "Laboratório de Redes de Computadores",
+                                    "sigla": "LabReCom",
+                                    "totalDeLugares": 24,
+                                    "tipo": "SOFTWARE"
+                                }
+                            }
+                        },
+                        "BLOCOA": {
+                            "sigla": "blocoA",
+                            "descricao": "administracao",
+                            "laboratorios": {}
+                        }
+                    }
+                }
+            }
+        }
+
+### Criar novo campus [POST]
+
+Para adicionar um novo campus na coleção. Recebe um objeto JSON contendo os dados de um campus.
+
++ nome (string) - Nome do campus
++ sigla (string) - Sigla do campus
++ telefone (string) - Telefone do campus
+
++ Request (application/json)
+
+        {
+            "nome": "São José",
+            "sigla": "SJE",
+            "telefone": "3381-2854"
+        }
+
++ Response 201
+
+    + Headers
+
+            Location: /campi/SJE
+
+    + Body
+
+## Campus [/campi/{sigla_campus}]
+
+A `sigla_campus` deve ser informada.
+
++ Parameters
+    + sigla_campus: SJE (string) - Sigla do campus
+
+### Detalhes de um campus [GET]
+
++ Response 200 (application/json)
+
+        {
+            "nome": "São José",
+            "sigla": "SJE",
+            "telefone": "3381-2854",
+            "blocos": {
+                "BLOCOB": {
+                    "sigla": "blocoB",
+                    "descricao": "ensino",
+                    "laboratorios": {
+                        "LABSIDI": {
+                            "nome": "Laboratório de Sistemas Digitais",
+                            "sigla": "LabSiDi",
+                            "totalDeLugares": 24,
+                            "tipo": "SOFTWARE"
+                        },
+                        "LABRECOM": {
+                            "nome": "Laboratório de Redes de Computadores",
+                            "sigla": "LabReCom",
+                            "totalDeLugares": 24,
+                            "tipo": "SOFTWARE"
+                        }
+                    }
+                },
+                "BLOCOA": {
+                    "sigla": "blocoA",
+                    "descricao": "administracao",
+                    "laboratorios": {}
+                }
+            }
+        }
+
+
+## Blocos  [/campi/{sigla_campus}/blocos]
+
++ Parameters
+    + sigla_campus: SJE (string) - Sigla do campus
+
+### Lista todos os blocos de um campus [GET]
+
++ Response 200 (application/json)
+
+        {
+            "BLOCOB": {
+                "sigla": "blocoB",
+                "descricao": "ensino",
+                "laboratorios": {
+                    "LABSIDI": {
+                        "nome": "Laboratório de Sistemas Digitais",
+                        "sigla": "LabSiDi",
+                        "totalDeLugares": 24,
+                        "tipo": "SOFTWARE"
+                    },
+                    "LABRECOM": {
+                        "nome": "Laboratório de Redes de Computadores",
+                        "sigla": "LabReCom",
+                        "totalDeLugares": 24,
+                        "tipo": "SOFTWARE"
+                    }
+                }
+            },
+            "BLOCOA": {
+                "sigla": "blocoA",
+                "descricao": "administracao",
+                "laboratorios": {}
+            }
+        }
+
+### Criar novo bloco [POST]
+
+Para adicionar um novo bloco a um campus na coleção. Recebe um objeto JSON contendo os dados de um bloco.
+
++ sigla (string) - Sigla do bloco
++ descricao (string) - Descrição do bloco
+
++ Request (application/json)
+
+        {
+                "sigla": "blocoA",
+                "descricao" : "administracao"
+        }
+
++ Response 201
+
+   + Headers
+
+            Location: /blocos/blocoA
+
+    + Body
+
+
+## Bloco  [/campi/{sigla_campus}/blocos/{sigla_bloco}/laboratorios]
+
++ Parameters
+    + sigla_campus: SJE (string) - Sigla do campus
+    + sigla_bloco: blocoB (string) - Sigla do bloco
+
+### Lista todos os laboratórios do bloco de um campus [GET]
+
++ Response 200 (application/json)
+
+        {
+            "laboratorios": {}
+        }
+
+### Criar novo laboratório [POST]
+
+Para adicionar um novo laboratório a um bloco de um campus. Recebe um objeto JSON contendo os dados de um laboratório.
+
++ sigla (string) - Sigla do laboratório
++ nome (string) - Nome do laboratório
++ totalDeLugares (number) - total de postos de trabalho
++ tipo (string) - SOFTWARE ou HARDWARE
+
++ Request (application/json)
+
+        {
+                "sigla": "LabReCom",
+                "nome" : "Laboratório de Redes de Computadores",
+                "totalDeLugares" : "24",
+                "tipo" : "SOFTWARE"
+        }
+
++ Response 201
+
+   + Headers
+
+            Location: /laboratorios/LabReCo
+
+    + Body
+
+
+## Laboratório  [/campi/{sigla_campus}/blocos/{sigla_bloco}/laboratorios/{sigla_laboratorio}]
+
++ Parameters
+    + sigla_campus: SJE (string) - Sigla do campus
+    + sigla_bloco: blocoB (string) - Sigla do bloco
+    + sigla_laboratorio: LabSiDi (string) - Sigla do laboratório
+
+### Detalhes de um laboratório de um bloco de um campus [GET]
+
++ Response 200 (application/json)
+
+        {
+            "LABSIDI": {
+                "nome": "Laboratório de Sistemas Digitais",
+                "sigla": "LabSiDi",
+                "totalDeLugares": 24,
+                "tipo": "SOFTWARE"
+            },
+            "LABRECOM": {
+                "nome": "Laboratório de Redes de Computadores",
+                "sigla": "LabReCom",
+                "totalDeLugares": 24,
+                "tipo": "SOFTWARE"
+            }
+        }
+
+### Atualizar dados de um laboratório [PUT]
+
++ Request (application/json)
+
+        {
+                "sigla": "LabReCo",
+                "nome" : "Laboratório de Redes de Computadores",
+                "totalDeLugares" : "30",
+                "tipo" : "SOFTWARE"
+        }
+
++ Response 200 (text/plain)
+
+        sucesso
+
+### Excluir um laboratório [DELETE]
+
++ Response 200 (text/plain)
+
+        sucesso
