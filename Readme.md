@@ -47,4 +47,7 @@ curl -X DELETE http://localhost:8080/api/v1/exemplo/pessoas/fulano
 
 Exemplo de um serviço para gestão dos laboratórios de ensino dos campi do IFSC. É criada uma base de dados em memória para armazenar os dados dos campi.
 
-[Essa API foi documentada](apiary.apib) de acordo com a especificação API Blueprint
+[Essa API foi documentada](https://laboratorios.docs.apiary.io) de acordo com a especificação API Blueprint e a mesma pode ser visualizada com o [Apiary](https://apiary.io/). O código fonte dessa documentação também está disponível no arquivo [apiary.apib](apiary.apib) nesse repositório.
+
+
+
