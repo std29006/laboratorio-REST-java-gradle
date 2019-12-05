@@ -30,7 +30,9 @@ public class Campi {
         if (c != null) {
             return Response.ok(c).build();
         }
-        throw new NotFoundException();
+        // Documentação:
+        // https://docs.oracle.com/javaee/7/api/javax/ws/rs/core/Response.Status.html
+        return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "Campus não existe").build();
     }
 
     @Path("/{sigla-campus}/blocos")
@@ -41,7 +43,8 @@ public class Campi {
         if (c != null) {
             return Response.ok(c.getBlocos()).build();
         }
-        throw new NotFoundException();
+        // No lugar de 404 seria melhorar usar o enum Response.Status.NOT_FOUND.getStatusCode();
+        return Response.status(404, "Bloco não existe").build();
     }
 
     @Path("/{sigla-campus}/blocos/{bloco}/laboratorios")
